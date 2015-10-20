@@ -1,0 +1,8 @@
+I = sinusoid2d(10,45,512,64,1);
+
+colormap('gray');
+fm = max(2* (1/64) * cos((pi*45)/180), 2 * (1/64) * sin((pi*45)/180) );
+Ie = sinusoid2d(10,45,512,64,1/(16 * fm));
+imagesc(Ie);
+
+Ieft = abs(fftshift(fft2(Ie)));

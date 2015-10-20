@@ -1,0 +1,7 @@
+I = imread('mandrill.png');
+J = imread('lena.jpg');
+
+If = low_pass_filtering(I, 64);
+Jf = low_pass_filtering(J, 64);
+
+figure()

@@ -1,0 +1,9 @@
+function If = frequential_filtering(I,H)
+ If= fftshift(fft2(I));
+ for i = 1:size(If, 1) do
+     for j = 1:size(If, 2) do
+         If(i,j) = If(i,j) * H(i,j);
+     end
+ end
+ If= ifft2(ifftshift(If));
+end

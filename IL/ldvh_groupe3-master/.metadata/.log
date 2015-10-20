@@ -1,0 +1,84 @@
+!SESSION 2015-10-06 11:12:34.566 -----------------------------------------------
+eclipse.buildId=unknown
+java.fullversion=JRE 1.7.0 IBM J9 2.6 Linux amd64-64 Compressed References 20141216_227497 (JIT enabled, AOT enabled)
+J9VM - R26_Java726_SR8_20141216_0955_B227497
+JIT  - r11.b07_20141003_74578.05
+GC   - R26_Java726_SR8_20141216_0955_B227497_CMPRSS
+J9CL - 20141216_227497
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=fr_FR
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.jface 2 0 2015-10-06 11:13:05.982
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2015-10-06 11:13:05.982
+!MESSAGE A conflict occurred for ALT+CTRL+C:
+Binding(ALT+CTRL+C,
+	ParameterizedCommand(Command(org.eclipse.datatools.sqltools.result.copyInstance,Copier le résultat,
+		,
+		Category(org.eclipse.datatools.sqltools.result.category,Vue des résultats SQL,null,true),
+		org.eclipse.ui.internal.MakeHandlersGo@7f4f564a,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(ALT+CTRL+C,
+	ParameterizedCommand(Command(org.eclipse.team.svn.ui.command.CommitCommand,Commit...,
+		,
+		Category(org.eclipse.team.svn.ui.command.category,SVN,null,true),
+		org.eclipse.ui.internal.MakeHandlersGo@358a7f45,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+!SUBENTRY 1 org.eclipse.jface 2 0 2015-10-06 11:13:05.982
+!MESSAGE A conflict occurred for ALT+CTRL+T:
+Binding(ALT+CTRL+T,
+	ParameterizedCommand(Command(com.ibm.xtools.transform.ui.runLastExecutedCommand,Exécuter la dernière transformation,
+		,
+		Category(com.ibm.xtools.transform.ui.transformCategory,Transformations,null,true),
+		org.eclipse.ui.internal.MakeHandlersGo@c328f1da,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(ALT+CTRL+T,
+	ParameterizedCommand(Command(org.eclipse.team.svn.ui.command.EditPropertiesCommand,Show Properties,
+		,
+		Category(org.eclipse.team.svn.ui.command.category,SVN,null,true),
+		org.eclipse.ui.internal.MakeHandlersGo@36cd6c54,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.core.net 1 0 2015-10-06 11:13:09.889
+!MESSAGE System property http.proxyHost is set to proxy.ufr-info-p6.jussieu.fr but should not be set.
+
+!ENTRY org.eclipse.core.net 1 0 2015-10-06 11:13:09.890
+!MESSAGE System property http.proxyPort is set to 3128 but should not be set.
+
+!ENTRY org.eclipse.core.net 1 0 2015-10-06 11:13:09.895
+!MESSAGE System property http.proxyHost is set to proxy.ufr-info-p6.jussieu.fr but should not be set.
+
+!ENTRY org.eclipse.core.net 1 0 2015-10-06 11:13:09.896
+!MESSAGE System property http.proxyPort is set to 3128 but should not be set.
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.452
+!MESSAGE NLS unused message: ModelerResource_MigrationFile_Message in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.453
+!MESSAGE NLS unused message: ModelerResource_MigrationFile_Description in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.454
+!MESSAGE NLS unused message: ModelerResource_MigrationFile_Warnings in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.455
+!MESSAGE NLS unused message: ModelerResource_MigrationFile_Errors in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.456
+!MESSAGE NLS unused message: ModelerResource_MigrationFile_MigrationReport in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:13:26.458
+!MESSAGE NLS unused message: ModelerResource_MigrationReport_ErrorLogMessage in: com.ibm.xtools.modeler.ui.internal.l10n.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:15:02.065
+!MESSAGE NLS unused message: Verifier_MultiLineProperty_InvalidValueChar in: org.eclipse.team.svn.ui.messages
+
+!ENTRY org.eclipse.osgi 2 1 2015-10-06 11:15:02.066
+!MESSAGE NLS unused message: Verifier_MultiLineProperty_ManyEquals in: org.eclipse.team.svn.ui.messages
