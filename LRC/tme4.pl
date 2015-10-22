@@ -10,6 +10,7 @@ subs(souris,mammifere).
 subs(felin,mammifere).
 subs(canide,mammifere).
 subs(mammifere,animal).
+subs(canari,animal).
 subs(animal,etreVivant).
 subs(and(animal,plante),nothing).
 
@@ -31,5 +32,11 @@ subs(and(all(mange,nothing),some(mange)),nothing).
 
 
 %%%%%%%%%%% EXERCICE 2 %%%%%%%%%%%%%%%
+
+%% 1. %%
+
+subsS1(C,C).
+subsS1(C,D) :- subs(C,D).
+subsS1(C,D) :- subs(C,E), subsS1(E,D).
 
 
