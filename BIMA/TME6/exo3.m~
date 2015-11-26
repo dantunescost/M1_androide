@@ -1,0 +1,12 @@
+I = load('toyHorse1.mat');
+J = load('toyHorse2.mat');
+
+Ri = calculR(I,15);
+Rj = calculR(J,15);
+
+Rfi = post_processing(Ri,100);
+Rfj = post_processing(Rj,100);
+
+figure();
+subplot(2,6,1);
+imagesc(I);
