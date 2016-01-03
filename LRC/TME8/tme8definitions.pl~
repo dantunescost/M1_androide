@@ -76,8 +76,6 @@ compositionBase(et,e,[e,et,=]).
 compositionBase(d,d,[d]).
 compositionBase(d,dt,[<,>,m,mt,o,ot,e,et,s,st,d,dt,=]).
 compositionBase(dt,d,[o,ot,e,et,d,dt,st,s,=]).
-compositionBase(=,X,[X]).
-compositionBase(X,=,[X]).
 
 
 

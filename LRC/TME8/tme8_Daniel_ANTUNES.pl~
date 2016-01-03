@@ -1,0 +1,147 @@
+
+:-include(tme8definitions).
+:-include(tme8allen).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%             EXERCICE 1              %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%% Ex1 Q2 %%%%%%%%%%
+transposeListe([],[]).
+transposeListe([X|Y],[Z|W]) :- transpose(X,Z), transposeListe(Y,W).
+
+symetrieListe([],[]).
+symetrieListe([X|Y],[Z|W]) :- symetrie(X,Z), symetrieListe(Y,W).
+
+
+%%%%%%%%% Ex1 Q3 %%%%%%%%%%
+
+% composition de base
+compose(R1,R2,L) :- compositionBase(R1,R2,L1), sort(L1,L).
+% compositon avec R1 o R2 = (R2t o R1t)t 
+compose(R1,R2,L) :- transpose(R1,X), transpose(R2,Y), compositionBase(Y,X,Z), transposeListe(Z,L1), sort(L1,L).
+% compositon avec R1 o R2 = (R1s o R2s)s 
+compose(R1,R2,L) :- symetrie(R1,X), symetrie(R2,Y), compositionBase(X,Y,Z), symetrieListe(Z,L1), sort(L1,L).
+% compositon avec R1 o R2 = (R2st o R1st)ts 
+compose(R1,R2,L) :- symetrie(R2,R2S), symetrie(R1,R1S), transpose(R2S,R2T), transpose(R1S,R1T), compositionBase(R2T,R1T,RL), transposeListe(RL,RT), symetrieListe(RT,L1), sort(L1,L).
+
+
+%%%%%%%%% Ex1 Q4 %%%%%%%%%%
+compositionEL(_,[],[]).
+compositionEL(X,[L1|L2],R) :- compose(X,L1,R1), compositionEL(X,L2,R2), union(R1,R2,R).
+
+compositionListe([],_,[]).
+compositionListe(_,[],[]).
+compositionListe([L11|L12],L2,Z) :- compositionEL(L11,L2,X), compositionListe(L12,L2,Y), union(X,Y,L1), sort(L1,Z).
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%             EXERCICE 2              %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%% Question 2 %%%%%%%%%%%%%%%%%%
+
+% prédicat permettant de créer un graphe
+creationGraphe([], ([],[])).
+creationGraphe([rel(I1,I2,R12)|Q], G) :- creationGraphe(Q,NG), ajouter(rel(I1,I2,R12),NG,G).
+
+
+%%%%%%%%%%%%%%%%%% Question 3 %%%%%%%%%%%%%%%%%%
+
+
+% on crée le graphe de départ, on l'affiche, on ajoute ensuite l'information supplémentaire et on l'affiche de nouveau
+afficherQ3 :- creationGraphe([rel(s,l,[o,m]),rel(s,r,[<,m,mt,>])],G), write(G), nl, ajouter(rel(l,r,[o,s,d]),G,NG), write(NG), nl.
+
+% Résultat:
+% ?- afficherQ3.
+% [l,s,r],[rel(s,l,[o,m]),rel(r,s,[>,mt,m,<]),rel(r,l,[<,=,>,d,e,mt,ot,s,st])]
+% [l,s,r],[rel(l,r,[o,s]),rel(s,l,[o,m]),rel(s,r,[<,m])]
+% true.
+
+% Cela ne correspond pas au résultat obtenu en cours
+% Ceci peut être dû à un problème de propagation
+
+%%%%%%%%%%%%%%%%%% Question 4 %%%%%%%%%%%%%%%%%%
+
+
+% Soit ij l'intervalle où Alfred lit son journal
+% Soit id l'intervalle où Alfred prend son petit déjeuner
+% Soit ic l'intervalle où Alfred boit son café
+% Soit ip l'intervalle où Alfred se promèene
+
+
+% on crée le graphe, on l'affiche, on ajoute ensuite la relation du 2. et on affiche à nouveau 
+afficherQ4 :- creationGraphe([rel(ij,id,[o,et,dt,s,=,st,d,e,ot]),rel(ij,ic,[e,=,et]),rel(id,ip,[<,m])],G), write(G), nl, nl,
+				ajouter(rel(ic,id,[d,s,e]),G,NG), write(NG), nl.
+
+
+% Ici petit problème, le graphe affiché à la fin ne correspond pas à celui vu en TD
+% Il s'agit d'un problème de propagation
+
+
+%%%%%%%%%%%%%%%%%% Question 5 %%%%%%%%%%%%%%%%%%
+
+% un predicat auxiliaire testant appartient(I,X,Y) si I est égal à X ou à Y
+appartient(X,_,X).
+appartient(X,X,_).
+
+% on affiche chaque relation touchée par I
+affiche((_,[rel(X,Y,L)|Q]), I) :- appartient(I,X,Y), write(X), write('--'), write(L), write('-->'), write(Y), nl, affiche((_,Q),I).  
+
+
+%%%%%%%%%%%%%%%%%% Question 6 %%%%%%%%%%%%%%%%%%
+
+
+% Ici on introduit les intervalles suivants (qui représentent l'intervalle où une personne était présente sur le domaine ou dans le manoir): 
+% - paul (le chauffeur, on considere que Paul n'est pas venu avec Bernard car cela n'a pas d'importance vu qu'il est reparti juste après)
+% - pierre (l'invité)
+% - louis (le neveu)
+% - gardien
+% - jardinier
+% - bernard
+% - francoise
+% - apprenti
+%
+% on a ensuite les évènements:
+% - meutre
+% - appel
+% - cafe
+% - inspection (l'inspection du jardin)
+% - signe (le signe de la main fait par Bernard de la terrasse)
+
+
+afficherQ6 :- creationGraphe([rel(meutre,appel,[<]), % appel a ete passe apres le meutre
+							  rel(paul,appel,[et,dt]), % les 3 personnes qui etait la pendant l'appel
+							  rel(pierre,appel,[et,dt]),
+							  rel(louis,appel,[et,dt]), 
+							  rel(gardien,appel,[dt]), % on suppose que le gardien etait toujours la
+							  rel(gardien,meutre,[dt]),
+							  rel(gardien,cafe,[dt]), % le gardien prend le cafe avec le jardinier
+							  rel(jardinier,cafe,[st]),
+							  rel(bernard,cafe,[st,ot]), % bernard arrive pendant le cafe
+							  rel(inspection,francoise,[d]), % francoise et le jardinier inspectent le jardin
+							  rel(inspection,jardinier,[d]),
+							  rel(louis,apprenti,[o,et,dt]), % louis et l'apprenti arrivent successivement
+							  rel(francoise,louis,[o]), % francoise part apres l'arrivee de l'apprenti et de louis
+							  rel(francoise,apprenti,[o]),
+							  rel(paul,pierre,[s,=,st]), % paul arrive avec pierre
+							  rel(signe,francoise,[d]), % le signe fait a francoise, le jardinier et l'apprenti
+							  rel(signe,apprenti,[d]),
+							  rel(signe,jardinier,[d]),
+							  rel(apprenti,jardinier,[d,e,ot])],G), 
+			  affiche(G,meutre), % on affiche pour voir qui etait la au moment du meutre
+			  ajouter(rel(louis,paul,[<]),G,NG), % on ajoute l'information supplementaire 
+			  affiche(NG,meutre). % et on reverifie l'affichage
+
+
+
+
+
+
