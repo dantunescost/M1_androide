@@ -1,0 +1,5 @@
+function [ImaTabCentre] = visage_centre(ImaTab, Xmoy)
+ImaTabCentre = ImaTab;
+for k=1:size(ImaTab,3)
+    ImaTabCentre(:,:,k) = ImaTabCen
+end

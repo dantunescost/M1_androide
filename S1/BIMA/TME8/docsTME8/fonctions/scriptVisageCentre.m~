@@ -1,0 +1,71 @@
+pathBase = '../Base/';
+
+[imaTab, imaTabTest] = chargeXTrainTest(pathBase);
+Xmoy=image_moy(imaTab);
+imaTabCentre = visage_centre(imaTab, Xmoy);
+
+[u, Lambda] = eigenfaces(imaTabCentre);
+u = reshape(u,size(imaTab,1),size(imaTab,2),size(imaTab,3));
+LambdaSum = sum(Lambda);
+LambdaCumul = Lambda;
+for i=1:size(Lambda)
+   Lambda(i) = (Lambda(i) / LambdaSum) * 100;
+   if i == 1
+       LambdaCumul(i) = LambdaCumul(i-1) + Lambda(i);
+end
+
+
+
+
+figure();
+
+subplot(2,5,1);
+imagesc(Xmoy);
+title('Moyen');
+
+
+subplot(2,5,2);
+imagesc(imaTab(:,:,15));
+title('Visage 15');
+subplot(2,5,3);
+imagesc(imaTabCentre(:,:,15));
+title('Visage centre 15');
+
+
+subplot(2,5,4);
+imagesc(imaTab(:,:,28));
+title('Visage 28');
+subplot(2,5,5);
+imagesc(imaTabCentre(:,:,28));
+title('Visage centre 28');
+
+
+subplot(2,5,6);
+imagesc(imaTab(:,:,2));
+title('Visage 2');
+subplot(2,5,7);
+imagesc(imaTabCentre(:,:,2));
+title('Visage centre 2');
+
+
+subplot(2,5,8);
+imagesc(imaTab(:,:,73));
+title('Visage 73');
+subplot(2,5,9);
+imagesc(imaTabCentre(:,:,73));
+title('Visage centre 73');
+
+
+figure();
+
+subplot(4,4,1);
+imagesc(Xmoy);
+title('Moyen');
+
+for n=2:16    
+    subplot(4,4,n);
+    imagesc(u(:,:,n-1));
+    title(Lambda(n-1));
+end
+
+
