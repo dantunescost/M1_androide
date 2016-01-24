@@ -39,7 +39,7 @@ def affichePosition(position):
     """
     print('* * * * * * * * * * * * * * * * * * * *')
     n = position['taille']
-    buffer = 'col:'
+    buffer = 'col:       '
     for i in range(0,n):
         buffer += ' ' + str(i+1) + ' \t'
     print(buffer)
@@ -154,13 +154,26 @@ def coupAutorise(position,coup):
         return positionTest
         
 def positionTerminale(position):
-    if position['graines']['SUD'] >= 25 or position['graines']['NORD'] >= 25:
+    n = position['taille']
+    joueur = position['trait']
+    if position['graines']['SUD'] >= (n*4)+1:
+        print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+`position['graines']['SUD']`+' graines!'
+        return True
+    if position['graines']['NORD'] >= (n*4)+1:
+        print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+`position['graines']['NORD']`+' graines!'
         return True
     i=1    
     while not coupAutorise(position,i) and i<=6:
         i+=1
     if i > 6:
+        if joueur == 'NORD':
+            position['graines']['SUD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
+            print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+`position['graines']['SUD']`+' graines!'
+        else:
+            position['graines']['NORD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
+            print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+`position['graines']['NORD']`+' graines!'
         return True
+    return False
     
     
 def moteurHumains(taille):
@@ -175,21 +188,114 @@ def moteurHumains(taille):
             positionT = coupAutorise(position,saisie)
         position = positionT
         
-def choixAleatoire(position):    
+import random         
+
+def choixAleatoire(position): 
+    if positionTerminale(position):
+        return 0
+    n = position['taille']
+    colonne = random.randint(1,n)
+    positionTest = coupAutorise(position, colonne)
+    while not positionTest:        
+        colonne = random.randint(1,n)
+        positionTest = coupAutorise(position, colonne)
+    return positionTest
+    
+def moteurAleatoire(taille, campCPU):
+    position = initialise(taille)
+    if campCPU == 'SUD':
+        position = choixAleatoire(position)
+    while not positionTerminale(position):
+        affichePosition(position)        
+        print 'Le joueur '+position['trait']+' va jouer.'
+        saisie = input("Entrez votre coup: ")
+        positionT = coupAutorise(position,saisie)
+        while not positionT:
+            saisie = input ("Coup invalide, veuillez rejouer: ")
+            positionT = coupAutorise(position,saisie)
+        position = positionT
+        affichePosition(position)        
+        print "L'ordinateur va jouer."
+        position = choixAleatoire(position)
+        
+        
+def evaluation(position):
     n = position['taille']
     tab = position['tablier']
-    joueur = position['trait']
-    i = 0
-    m = n
-    if joueur == 'NORD':  
-        i += n
-        m += n
-                
+    if position['graines']['SUD'] >= (n*4)+1:
+        return 1000
+    if position['graines']['NORD'] >= (n*4)+1:
+        return -1000
+    cases12sud = 0
+    cases12nord = 0    
+    for i in range(0,n-1):
+        if tab[i] == 1 or tab[i] == 2:
+            cases12sud += 1
+        if tab[i+n] == 1 or tab[i+n] == 2:
+            cases12nord += 1
+    return 2*position['graines']['SUD'] + cases12nord - 2*position['graines']['NORD'] - cases12sud
+        
+
+def evalueMinimax(position,prof):
+    (coup,valeur) = (0,0)
+    if prof == 0 or positionTerminale(position):
+        return (0,evaluation(position))
+    
+    minus_inf = None
+    plus_inf = "inf"
+    n = position['taille']
+    bestCoup = 0
+    if position['trait'] == 'SUD':
+        bestValue = minus_inf
+        for i in range(1,n):
+            child = coupAutorise(position,i)
+            if child:
+                (coup,valeur) = evalueMinimax(child,prof-1)
+                if valeur > bestValue : 
+                    bestValue = valeur
+                    bestCoup = i
+        return (bestCoup,bestValue)
+    else:
+        bestValue = plus_inf
+        for i in range(1,n):
+            child = coupAutorise(position,i)
+            if child:
+                (coup,valeur) = evalueMinimax(child,prof-1)
+                if valeur < bestValue : 
+                    bestValue = valeur
+                    bestCoup = i
+        return (bestCoup,bestValue)
+        
+
+def choixMinimax(position,prof):
+    if positionTerminale(position):
+        return 0
+    (coup,valeur) = evalueMinimax(position,prof)
+    return coup
+    
+def moteurMinimax(taille, campCPU, prof):
+    position = initialise(taille)
+    if campCPU == 'SUD':
+        coup = choixMinimax(position,prof)
+        position = joueCoup(position,coup)
+    while not positionTerminale(position):
+        affichePosition(position)        
+        print 'Le joueur '+position['trait']+' va jouer.'
+        saisie = input("Entrez votre coup: ")
+        positionT = coupAutorise(position,saisie)
+        while not positionT:
+            saisie = input ("Coup invalide, veuillez rejouer: ")
+            positionT = coupAutorise(position,saisie)
+        position = positionT
+        affichePosition(position)        
+        print "L'ordinateur va jouer."
+        coup = choixMinimax(position,prof)
+        position = joueCoup(position,coup)
     
     
 # ------------------------- POUR VOIR COMMENT CA MARCHE:
     
-moteurHumains(6)
+moteurMinimax(6,'NORD',5)
 #maPosition = initialise(6)
 #affichePosition(maPosition)
 #maPosition2 = joueCoup(maPosition,1) # SUD joue
