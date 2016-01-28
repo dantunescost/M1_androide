@@ -24,14 +24,14 @@ public class AgentSender extends Agent{
 
 		super.setup();
 
-		//get the parameters given into the object[]
-		final Object[] args = getArguments();
-		if(args[0]!=null){
-			data = (List<String>) args[0];
-
-		}else{
-			System.out.println("Erreur lors du tranfert des parametres");
-		}
+//		//get the parameters given into the object[]
+//		final Object[] args = getArguments();
+//		if(args[0]!=null){
+//			data = (List<String>) args[0];
+//
+//		}else{
+//			System.out.println("Erreur lors du tranfert des parametres");
+//		}
 
 		//Add the behaviours
 		//EX1
@@ -42,9 +42,12 @@ public class AgentSender extends Agent{
 		//addBehaviour(new ReceiveMessage(this));
 		
 		//EX3
-		addBehaviour(new SendXIntegers(this));
-		addBehaviour(new ReceiveMessage(this));
+		//addBehaviour(new SendXIntegers(this));
+		//addBehaviour(new ReceiveMessage(this));
 
+		//EX4
+		addBehaviour(new SendIntegersOnDemand(this));
+		
 		System.out.println("the sender agent "+this.getLocalName()+ " is started");
 		
 	}
@@ -237,6 +240,51 @@ public class AgentSender extends Agent{
 				System.out.println("<----Message received from "+msg.getSender().getLocalName()+" ,sum of "+ X +" integers sent= "+msg.getContent());
 				this.finished=true;
 			}
+		}
+
+		public boolean done() {
+			return finished;
+		}
+
+	}
+	
+	public class SendIntegersOnDemand extends SimpleBehaviour{
+		/**
+		 * When an agent choose to communicate with others agents in order to reach a precise decision, 
+		 * it tries to form a coalition. This behaviour sends randomly chosen integers on demand of an agent, until that agent asks to stop. (EXO 4 TP 1)
+		 *  
+		 */
+
+		private static final long serialVersionUID = 1L;
+
+		private boolean finished=false;
+
+		public SendIntegersOnDemand(final Agent myagent) {
+			super(myagent);
+		}
+
+
+		public void action() {
+			//Create a message in order to send it to the choosen agent
+			final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			
+			final ACLMessage msg = this.myAgent.receive(msgTemplate);
+			if (msg != null) {
+				final ACLMessage msgInt = new ACLMessage(ACLMessage.INFORM);
+				msgInt.setSender(this.myAgent.getAID());
+				Random rng = new Random();
+				msgInt.addReceiver(new AID("AgentSum", AID.ISLOCALNAME));
+				while (this.myAgent.receive(msgTemplate)==null){
+					int n = rng.nextInt(100)+1;
+					msgInt.setContent(Integer.toString(n));
+					this.myAgent.send(msgInt);
+					System.out.println("----> Message sent to AgentSum ,content= "+msgInt.getContent());
+				}
+			}
+			else{
+				block();
+			}
+
 		}
 
 		public boolean done() {

@@ -1,3 +1,5 @@
+import java.util.List;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
@@ -6,17 +8,24 @@ import jade.lang.acl.MessageTemplate;
 
 
 public class AgentSomme extends Agent{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public int K;
+	protected List<String> data;
+	
 	protected void setup(){
 
 		super.setup();
-
 		//get the parameters given into the object[]
 		final Object[] args = getArguments();
 		if(args.length!=0){
-			System.out.println("Erreur lors de la creation du receveur");
-
+			data = (List<String>) args[0];
+			K = Integer.parseInt(data.get(0));
 		}
+		//EX4
+		addBehaviour(new ReceiveKIntegers(this));
 		
 		System.out.println("the receiver agent "+this.getLocalName()+ " is started");
 
@@ -93,6 +102,8 @@ public class AgentSomme extends Agent{
 		
 		private int sum = 0;
 		
+		private boolean demandSent = false;
+		
 
 		public ReceiveKIntegers(final Agent myagent) {
 			super(myagent);
@@ -101,16 +112,21 @@ public class AgentSomme extends Agent{
 
 
 		public void action() {
-			//1) receive the message
+			if(!demandSent){
+				//1) send demand to every other agent
+				final ACLMessage demand = new ACLMessage(ACLMessage.INFORM);
+				demand.setSender(this.myAgent.getAID());
+				demand.addReceiver(new AID("Agent0", AID.ISLOCALNAME));
+				demand.addReceiver(new AID("Agent1", AID.ISLOCALNAME));
+				demand.addReceiver(new AID("Agent2", AID.ISLOCALNAME));
+				demand.addReceiver(new AID("Agent3", AID.ISLOCALNAME));
+				demand.setContent("Demand for "+K+" integers!");
+				this.myAgent.send(demand);
+				demandSent = true;
+			}
+			
+			//2) receive the message
 			final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-				//MessageTemplate.and(
-					//MessageTemplate.MatchPerformative(ACLMessage.DISCONFIRM),
-					//MessageTemplate.and(
-					//		MessageTemplate.MatchProtocol(MyOntology.PAXOS_QUIT_COALITION),
-					//		MessageTemplate.and(
-					//				MessageTemplate.MatchLanguage(MyOntology.LANGUAGE),
-					//				MessageTemplate.MatchOntology(MyOntology.ONTOLOGY_NAME))
-					//)
 			
 
 			final ACLMessage msg = this.myAgent.receive(msgTemplate);
@@ -125,6 +141,9 @@ public class AgentSomme extends Agent{
 				final ACLMessage answer = new ACLMessage(ACLMessage.INFORM);
 				answer.setSender(this.myAgent.getAID());
 				answer.addReceiver(new AID("Agent0", AID.ISLOCALNAME));
+				answer.addReceiver(new AID("Agent1", AID.ISLOCALNAME));
+				answer.addReceiver(new AID("Agent2", AID.ISLOCALNAME));
+				answer.addReceiver(new AID("Agent3", AID.ISLOCALNAME));
 				answer.setContent(Integer.toString(sum));
 				this.myAgent.send(answer);
 				System.out.println("Sum sent");

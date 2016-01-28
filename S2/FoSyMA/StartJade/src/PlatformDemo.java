@@ -225,7 +225,7 @@ public class PlatformDemo {
 		agentName="Agent1";
 		try {					
 			Object[] objtab=new Object[]{};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,AgentReceiver.class.getName(),objtab);
+			AgentController	ag=c.createNewAgent(agentName,AgentSender.class.getName(),objtab);
 			agentList.add(ag);
 			System.out.println(agentName+" launched");
 		} catch (StaleProxyException e) {
@@ -252,7 +252,7 @@ public class PlatformDemo {
 		agentName="Agent3";
 		try {					
 			Object[] objtab=new Object[]{};//used to give informations to the agent
-			AgentController	ag=c.createNewAgent(agentName,AgentEmpty.class.getName(),objtab);
+			AgentController	ag=c.createNewAgent(agentName,AgentSender.class.getName(),objtab);
 			agentList.add(ag);
 			System.out.println(agentName+" launched");
 		} catch (StaleProxyException e) {
@@ -260,6 +260,20 @@ public class PlatformDemo {
 			e.printStackTrace();
 		}
 
+		//Agent3 on container2
+		c = containerList.get("container2");
+		agentName="AgentSum";
+		try {	
+			List<String> data=new ArrayList<String>();
+			data.add("15");data.add("2");data.add("3");
+			Object[] objtab=new Object[]{data};//used to give informations to the agent
+			AgentController	ag=c.createNewAgent(agentName,AgentSomme.class.getName(),objtab);
+			agentList.add(ag);
+			System.out.println(agentName+" launched");
+		} catch (StaleProxyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		System.out.println("Agents launched...");
 		return agentList;
