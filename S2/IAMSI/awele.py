@@ -20,6 +20,9 @@
 # COUP : valeur entière comprise entre 1 et le nombre de colonnes du tablier
 
 # - - - - - - - - - - - - - - - INITIALISATION
+import random  
+
+
 def initialise(n):
     """ int -> POSITION
         Hypothèse : n > 0
@@ -120,19 +123,27 @@ def joueCoup(position,coup):
     
     
 #---------------------------------- NOS FONCTIONS --------------------------------
-# Test si un coup est jouable dans la position donnee pour la case nombre. 
+# Test si un coup est jouable dans la position donnee pour la case nombre.
+# Verifie simplement la presence de graines.
 # Ne teste pas si la position resultante sera legale.
 def coupJouable(position,nombre):
     n = position['taille']
     tab = position['tablier']
     joueur = position['trait']
     if nombre >= 1 and nombre <= n:
+        # Ce test permet d'acceder a la case correspondante a la representation du tablier donnee.
         if (joueur == 'SUD' and tab[nombre-1] > 0) or (joueur == 'NORD' and tab[2*n - nombre] > 0):
             return True
         
     return False
     
 
+# Verifie si un coup est autorise dans la position donnee.
+# On test d'abord si le coup est jouable a l'aide de la fonction precedente.
+# Si le coup est jouable, on effectue le coup sur une copie de la position pour verifier
+# que la position resultante est legale.
+# Renvoie False si le coup n'est pas autorise
+# Sinon, la fonction renvoie la position obtenue en jouant le coup donne
 def coupAutorise(position,coup):
     if not coupJouable(position, coup):
         return False
@@ -144,15 +155,24 @@ def coupAutorise(position,coup):
         tab = positionTest['tablier']
         joueur = positionTest['trait']
         i = 0
+        # Les cases du joueur 'SUD' vont de 0 a taille-1
+        # Les cases du joueur 'NORD' vont de taille a 2*taille-1
         if joueur == 'NORD':  
             i += n
             m += n
-        while i < m and tab[i] == 0:
+        while i < m and tab[i] == 0: # On teste si toutes les cases de l'adversaire sont vides
             i+=1
         if i == m:
             return False
         return positionTest
         
+
+
+# Detecte la fin de la partie, pour les raisons suivantes :
+#       - Un joueur a capture suffisamment de graines et remporte la partie.
+#       - Le joueur actuel ne dispose d'aucun coup valide.
+# Renvoie False si la partie n'est pas terminee.
+# Sinon, affiche le vainqueur ainsi que son nombre de graines puis renvoie True.        
 def positionTerminale(position):
     n = position['taille']
     joueur = position['trait']
@@ -175,6 +195,9 @@ def positionTerminale(position):
         return True
     return False
     
+    
+# Fonction identique a la precedente, les affichages sont retires pour l'evaluation de MiniMax et ALphaBeta
+# Pour eviter de declarer la victoire d'un joueur bien avant qu'elle ne se produise.
 def positionTerminaleMinimax(position):
     n = position['taille']
     joueur = position['trait']
@@ -193,7 +216,10 @@ def positionTerminaleMinimax(position):
         return True
     return False
     
-    
+
+
+# Permet a deux joueurs humains de jouer une partie via l'interface console.
+# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
 def moteurHumains(taille):
     position = initialise(taille)
     while not positionTerminale(position):
@@ -206,8 +232,9 @@ def moteurHumains(taille):
             positionT = coupAutorise(position,saisie)
         position = positionT
         
-import random         
-
+       
+# Joue un coup aleatoire sur la position donnee
+# /!\ Cette fonction est a AMELIORER /!\
 def choixAleatoire(position): 
     if positionTerminale(position):
         return 0
@@ -219,6 +246,8 @@ def choixAleatoire(position):
         positionTest = coupAutorise(position, colonne)
     return positionTest
     
+# Permet a un joueur humain de se mesurer a une IA jouant purement aleatoirement.
+# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
 def moteurAleatoire(taille, campCPU):
     position = initialise(taille)
     if campCPU == 'SUD':
@@ -236,7 +265,8 @@ def moteurAleatoire(taille, campCPU):
         print "L'ordinateur Aleatoire va jouer."
         position = choixAleatoire(position)
         
-        
+
+# Fonction d'evaluation pour MiniMax et AlphaBeta, version fournie dans l'enonce.
 def evaluation(position):
     n = position['taille']
     tab = position['tablier']
@@ -254,6 +284,9 @@ def evaluation(position):
     return 2*position['graines']['SUD'] + cases12nord - 2*position['graines']['NORD'] - cases12sud
         
 
+# Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
+# le MiniMax jusqu'a atteindre la profondeur donnee.
+# /!\ Cette fonction considere que l'IA est le joueur 'NORD'
 def evalueMinimax(position,prof):
     (coup,valeur) = (0,0)
     if prof == 0 or positionTerminaleMinimax(position):
@@ -284,13 +317,17 @@ def evalueMinimax(position,prof):
                     bestCoup = i
         return (bestCoup,bestValue)
         
-
+        
+# Fonction qui recupere le coup optimal du MiniMax sur la position et la profondeur donnees 
 def choixMinimax(position,prof):
     if positionTerminale(position):
         return 0
     (coup,valeur) = evalueMinimax(position,prof)
     return coup
     
+    
+# Permet d'affronter l'IA exploitant l'algorithme MiniMax pour choisir ses coups.
+# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
 def moteurMinimax(taille, campCPU, prof):
     position = initialise(taille)
     if campCPU == 'SUD':
@@ -313,6 +350,10 @@ def moteurMinimax(taille, campCPU, prof):
         else:
             print "L'ordinateur ne peut plus jouer!"
         
+        
+# Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
+# AlphaBeta jusqu'a atteindre la profondeur donnee.
+# /!\ Cette fonction considere que l'IA est le joueur 'NORD'
 def evalueAlphaBeta(position,prof,alpha,beta):
     (coup,valeur) = (0,0)
     if prof == 0 or positionTerminaleMinimax(position):
@@ -344,6 +385,7 @@ def evalueAlphaBeta(position,prof,alpha,beta):
         return (bestCoup,beta)
         
 
+# Fonction qui recupere le coup optimal d'AlphaBeta sur la position et la profondeur donnees 
 def choixAlphaBeta(position,prof):
     if positionTerminale(position):
         return 0
@@ -351,6 +393,8 @@ def choixAlphaBeta(position,prof):
     return coup
     
     
+# Permet d'affronter l'IA exploitant l'algorithme AlphaBeta pour choisir ses coups.
+# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
 def moteurAlphaBeta(taille, campCPU, prof):
     position = initialise(taille)
     if campCPU == 'SUD':
@@ -373,7 +417,11 @@ def moteurAlphaBeta(taille, campCPU, prof):
         else:
             print "L'ordinateur ne peut plus jouer!"
     
+    
+    
 # ------------------------- POUR VOIR COMMENT CA MARCHE:
+    
+# /!\ Faire un nettoyage / Peut-etre un choix entre les modes de jeu dans la console au lancement ?    
     
 #moteurMinimax(6,'NORD',6)
 moteurAlphaBeta(6,'NORD',9)
