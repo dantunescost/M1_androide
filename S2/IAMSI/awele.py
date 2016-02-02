@@ -219,8 +219,7 @@ def positionTerminaleMinimax(position):
 
 
 # Permet a deux joueurs humains de jouer une partie via l'interface console.
-# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
-def moteurHumains(taille):
+def moteurHumains(taille = 6):
     position = initialise(taille)
     while not positionTerminale(position):
         affichePosition(position)        
@@ -234,7 +233,6 @@ def moteurHumains(taille):
         
        
 # Joue un coup aleatoire sur la position donnee
-# /!\ Cette fonction est a AMELIORER /!\
 def choixAleatoire(position): 
     if positionTerminale(position):
         return 0
@@ -246,9 +244,9 @@ def choixAleatoire(position):
         positionTest = coupAutorise(position, colonne)
     return positionTest
     
+    
 # Permet a un joueur humain de se mesurer a une IA jouant purement aleatoirement.
-# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
-def moteurAleatoire(taille, campCPU):
+def moteurAleatoire(campCPU, taille=6):
     position = initialise(taille)
     if campCPU == 'SUD':
         position = choixAleatoire(position)
@@ -286,7 +284,6 @@ def evaluation(position):
 
 # Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
 # le MiniMax jusqu'a atteindre la profondeur donnee.
-# /!\ Cette fonction considere que l'IA est le joueur 'NORD'
 def evalueMinimax(position,prof):
     (coup,valeur) = (0,0)
     if prof == 0 or positionTerminaleMinimax(position):
@@ -327,8 +324,7 @@ def choixMinimax(position,prof):
     
     
 # Permet d'affronter l'IA exploitant l'algorithme MiniMax pour choisir ses coups.
-# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
-def moteurMinimax(taille, campCPU, prof):
+def moteurMinimax(campCPU, prof, taille=6):
     position = initialise(taille)
     if campCPU == 'SUD':
         coup = choixMinimax(position,prof)
@@ -353,7 +349,6 @@ def moteurMinimax(taille, campCPU, prof):
         
 # Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
 # AlphaBeta jusqu'a atteindre la profondeur donnee.
-# /!\ Cette fonction considere que l'IA est le joueur 'NORD'
 def evalueAlphaBeta(position,prof,alpha,beta):
     (coup,valeur) = (0,0)
     if prof == 0 or positionTerminaleMinimax(position):
@@ -394,11 +389,12 @@ def choixAlphaBeta(position,prof):
     
     
 # Permet d'affronter l'IA exploitant l'algorithme AlphaBeta pour choisir ses coups.
-# /!\ Gestion du choix de la taille de la grille non demande par l'enonce
-def moteurAlphaBeta(taille, campCPU, prof):
+def moteurAlphaBeta(campCPU, prof, taille = 6):
     position = initialise(taille)
     if campCPU == 'SUD':
+        affichePosition(position)        
         coup = choixAlphaBeta(position,prof)
+        print "L'ordinateur AlphaBeta va jouer le coup : " + str(coup)
         position = joueCoup(position,coup)
     while not positionTerminale(position):
         affichePosition(position)        
@@ -417,32 +413,47 @@ def moteurAlphaBeta(taille, campCPU, prof):
         else:
             print "L'ordinateur ne peut plus jouer!"
     
+
+def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
+    position = initialise(taille)
+    nbTours = 0
+    while not positionTerminale(position):
+        nbTours = nbTours + 1
+        if position['trait'] == 'SUD':
+            prof = prof1
+        else:
+            prof = prof2
+        coup = choixAlphaBeta(position,prof)  
+        if coup <> 0:
+            if affiche:
+                affichePosition(position) 
+                print "L'ordinateur " + position['trait'] + " va jouer le coup : " + str(coup)
+            position = joueCoup(position,coup)
+        else:
+            print "L'ordinateur ne peut plus jouer!"
     
-    
+    if affiche:
+        print "La partie a dure : " + str(nbTours) + " tours !"
 # ------------------------- POUR VOIR COMMENT CA MARCHE:
     
 # /!\ Faire un nettoyage / Peut-etre un choix entre les modes de jeu dans la console au lancement ?    
     
 #moteurMinimax(6,'NORD',6)
-moteurAlphaBeta(6,'NORD',9)
-#maPosition = initialise(6)
-#affichePosition(maPosition)
-#maPosition2 = joueCoup(maPosition,1) # SUD joue
-#maPosition2 = joueCoup(maPosition2,1) # NORD joue
-##maPosition2 = joueCoup(maPosition2,2) # SUD joue
-##maPosition2 = joueCoup(maPosition2,4) # NORD joue
-##maPosition2 = joueCoup(maPosition2,3) # SUD joue
-##maPosition2 = joueCoup(maPosition2,2) # NORD joue
-##maPosition2 = joueCoup(maPosition2,5) # SUD joue
-#affichePosition(maPosition2)
-#print("------\nPartie sur un tablier réduit pour tester:")
-##maPosition = initialise(3)
-#affichePosition(maPosition)
-#maPosition2 = joueCoup(maPosition,1) # SUD joue
-#maPosition2 = joueCoup(maPosition2,1) # NORD joue
-#maPosition2 = joueCoup(maPosition2,3) # SUD joue
-#maPosition2 = joueCoup(maPosition2,3) # NORD joue
-#maPosition2 = joueCoup(maPosition2,1) # SUD joue
-#maPosition2 = joueCoup(maPosition2,1) # NORD joue
-#affichePosition(maPosition2)
+#moteurAlphaBeta('SUD',9)
+moteurIAvsIA(9,2,True)
 # ------------------------- FIN TEST
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
