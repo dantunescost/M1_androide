@@ -470,7 +470,36 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
 
     print "La partie a dure : " + str(nbTours) + " tours !"
     
-
+# Fonction d'evaluation ameliorée
+def evaluationbis(position):
+    n = position['taille']
+    tab = position['tablier']
+    if position['graines']['SUD'] >= (n*4)+1:
+        return 1000
+    if position['graines']['NORD'] >= (n*4)+1:
+        return -1000
+    cases12sud = 0
+    cases12nord = 0    
+    voisinMangable1 = False
+    voisinMangable2 = False
+    for i in range(0,n-1):
+        if tab[i] == 1 or tab[i] == 2:
+            if voisinMangable1:
+                cases12sud += 2
+            else:
+                cases12sud += 1
+            voisinMangable1 = True
+        else:
+            voisinMangable1 = False
+        if tab[i+n] == 1 or tab[i+n] == 2:
+            if voisinMangable2:
+                cases12nord += 2
+            else:
+                cases12nord += 1
+            voisinMangable2 = True
+        else:
+            voisinMangable2 = False
+    return 2*position['graines']['SUD'] + cases12nord - 2*position['graines']['NORD'] - cases12sud
 # ------------------------- TESTS
     
 #moteurMinimax('NORD',6)
