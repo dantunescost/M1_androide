@@ -179,11 +179,17 @@ def positionTerminale(position):
     # Si un des deux joueurs a capture suffisamment de graines (25 pour un tablier de taille 6)
     if position['graines']['SUD'] >= (n*4)+1: 
         print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
-        print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        if position['graines']['NORD'] <> 0:
+            print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        else:
+            print 'Le joueur NORD a obtenu le score lamentable de 0 graine'
         return True
     if position['graines']['NORD'] >= (n*4)+1:
         print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
-        print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        if position['graines']['SUD'] <> 0:        
+            print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['SUD'])+' graines!'
+        else:
+            print 'Le joueur SUD a obtenu le score lamentable de 0 graine'
         return True
     
     # Ajout d'une regle lorsqu'un joueur ne peut plus jouer
@@ -195,11 +201,17 @@ def positionTerminale(position):
         if joueur == 'NORD':
             position['graines']['SUD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
-            print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            if position['graines']['NORD'] <> 0:
+                print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            else:
+                print 'Le joueur NORD a obtenu le score lamentable de 0 graine'
         else:
             position['graines']['NORD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
-            print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            if position['graines']['SUD'] <> 0:        
+                print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['SUD'])+' graines!'
+            else:
+                print 'Le joueur SUD a obtenu le score lamentable de 0 graine'
         return True
     return False
     
@@ -289,7 +301,7 @@ def evaluation(position):
         return -1000
     cases12sud = 0
     cases12nord = 0    
-    for i in range(0,n-1):
+    for i in range(0,n):
         if tab[i] == 1 or tab[i] == 2:
             cases12sud += 1
         if tab[i+n] == 1 or tab[i+n] == 2:
@@ -377,7 +389,7 @@ def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
     # on envoie la valeur de l'evaluation de la position.
     if prof == 0 or positionTerminaleMinimax(position):
         # On verifie quelle fonction d'evaluation utiliser (celle de l'exercice 2 est par defaut)
-        if feval: 
+        if feval == 1: 
             return (0,evaluation(position))
         else:
             return (0,evaluationbis(position))
@@ -389,7 +401,7 @@ def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
         while i < n and alpha < beta: 
             child = coupAutorise(position,i)
             if child:
-                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta)
+                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta,feval)
                 if valeur > alpha : 
                     alpha = valeur
                     bestCoup = i
@@ -400,7 +412,7 @@ def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
         while i < n and alpha < beta:
             child = coupAutorise(position,i)
             if child:
-                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta)
+                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta,feval)
                 if valeur < beta : 
                     beta = valeur
                     bestCoup = i
@@ -480,7 +492,8 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
 
     print "La partie a dure : " + str(nbTours) + " tours !"
     
-# Fonction d'evaluation ameliorée
+# Fonction d'evaluation alternative (ne performe pas mieux)
+# Tient compte des chaines de graines dans son evaluation
 def evaluationbis(position):
     n = position['taille']
     tab = position['tablier']
@@ -492,7 +505,7 @@ def evaluationbis(position):
     cases12nord = 0    
     voisinMangable1 = False
     voisinMangable2 = False
-    for i in range(0,n-1):
+    for i in range(0,n):
         if tab[i] == 1 or tab[i] == 2:
             if voisinMangable1:
                 cases12sud += 2
@@ -509,12 +522,12 @@ def evaluationbis(position):
             voisinMangable2 = True
         else:
             voisinMangable2 = False
-    return 2*position['graines']['SUD'] + cases12nord - 2*position['graines']['NORD'] - cases12sud
+    return 5*position['graines']['SUD'] + cases12nord - 5*position['graines']['NORD'] - cases12sud
 # ------------------------- TESTS
     
 #moteurMinimax('NORD',6)
 #moteurAlphaBeta('SUD',9)
-moteurIAvsIA(7,7,True)
+moteurIAvsIA(6,6,True)
 # ------------------------- FIN TEST
 
 
