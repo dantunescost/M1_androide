@@ -179,11 +179,14 @@ def positionTerminale(position):
     # Si un des deux joueurs a capture suffisamment de graines (25 pour un tablier de taille 6)
     if position['graines']['SUD'] >= (n*4)+1: 
         print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
+        print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
         return True
     if position['graines']['NORD'] >= (n*4)+1:
         print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
+        print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
         return True
     
+    # Ajout d'une regle lorsqu'un joueur ne peut plus jouer
     # On test egalement si le joueur courant ne dispose d'aucun coup autorise 
     i=1    
     while not coupAutorise(position,i) and i<=6:
@@ -192,9 +195,11 @@ def positionTerminale(position):
         if joueur == 'NORD':
             position['graines']['SUD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
+            print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
         else:
             position['graines']['NORD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
+            print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
         return True
     return False
     
@@ -254,8 +259,12 @@ def choixAleatoire(position):
 # Permet a un joueur humain de se mesurer a une IA jouant aleatoirement.
 def moteurAleatoire(campCPU, taille=6):
     position = initialise(taille)
+    
+    # Si l'IA joue en premier
     if campCPU == 'SUD':
         position = choixAleatoire(position)
+    
+    # On boucle en faisant jouer le joueur puis l'IA a tour de role
     while not positionTerminale(position):
         affichePosition(position)        
         print 'Le joueur '+position['trait']+' va jouer.'
@@ -270,7 +279,7 @@ def moteurAleatoire(campCPU, taille=6):
         position = choixAleatoire(position)
         
 
-# Fonction d'evaluation pour MiniMax et AlphaBeta, version fournie dans l'enonce.
+# Fonction d'evaluation pour MiniMax et AlphaBeta, version fournie dans l'enonce a l'exercice 2.
 def evaluation(position):
     n = position['taille']
     tab = position['tablier']
@@ -292,6 +301,8 @@ def evaluation(position):
 # le MiniMax jusqu'a atteindre la profondeur donnee.
 def evalueMinimax(position,prof):
     (coup,valeur) = (0,0)
+    # Si on a atteint la profondeur maximale ou que la partie se termine a cette position,
+    # on envoie la valeur de l'evaluation de la position.
     if prof == 0 or positionTerminaleMinimax(position):
         return (0,evaluation(position))
     
@@ -332,9 +343,13 @@ def choixMinimax(position,prof):
 # Permet d'affronter l'IA exploitant l'algorithme MiniMax pour choisir ses coups.
 def moteurMinimax(campCPU, prof, taille=6):
     position = initialise(taille)
+    
+    # Si l'IA joue en premier
     if campCPU == 'SUD':
         coup = choixMinimax(position,prof)
         position = joueCoup(position,coup)
+        
+    # On boucle en faisant jouer le joueur puis l'IA a tour de role
     while not positionTerminale(position):
         affichePosition(position)        
         print 'Le joueur '+position['trait']+' va jouer.'
@@ -357,6 +372,9 @@ def moteurMinimax(campCPU, prof, taille=6):
 # AlphaBeta jusqu'a atteindre la profondeur donnee.
 def evalueAlphaBeta(position,prof,alpha,beta):
     (coup,valeur) = (0,0)
+    
+    # Si on a atteint la profondeur maximale ou que la partie se termine a cette position,
+    # on envoie la valeur de l'evaluation de la position.
     if prof == 0 or positionTerminaleMinimax(position):
         return (0,evaluation(position))
         
@@ -397,11 +415,15 @@ def choixAlphaBeta(position,prof):
 # Permet d'affronter l'IA exploitant l'algorithme AlphaBeta pour choisir ses coups.
 def moteurAlphaBeta(campCPU, prof, taille = 6):
     position = initialise(taille)
+    
+    # Si l'IA joue en premier
     if campCPU == 'SUD':
         affichePosition(position)        
         coup = choixAlphaBeta(position,prof)
         print "L'ordinateur AlphaBeta va jouer le coup : " + str(coup)
         position = joueCoup(position,coup)
+        
+    # On boucle en faisant jouer le joueur puis l'IA a tour de role
     while not positionTerminale(position):
         affichePosition(position)        
         print 'Le joueur '+position['trait']+' va jouer.'
@@ -423,7 +445,11 @@ def moteurAlphaBeta(campCPU, prof, taille = 6):
 
 # Pour aller plus loin :
 
-# Permet de tester une partie entre 2 IA avec differentes profondeurs pour Alpha-Beta
+# Permet de tester une partie entre 2 IA avec differentes profondeurs pour Alpha-Beta.
+# Note : prof1 est utilisee par l'IA au 'SUD'
+#        prof2 est utilisee par l'IA au 'NORD'
+# La variable affiche permet d'afficher ou non le tablier ainsi que les coups choisis par les IA.
+# Dans tous les cas, le vainqueur et le nombre de tours sont indiques.
 def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
     position = initialise(taille)
     nbTours = 0
@@ -441,16 +467,15 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
             position = joueCoup(position,coup)
         else:
             print "L'ordinateur ne peut plus jouer!"
+
+    print "La partie a dure : " + str(nbTours) + " tours !"
     
-    if affiche:
-        print "La partie a dure : " + str(nbTours) + " tours !"
-# ------------------------- POUR VOIR COMMENT CA MARCHE:
+
+# ------------------------- TESTS
     
-# /!\ Faire un nettoyage / Peut-etre un choix entre les modes de jeu dans la console au lancement ?    
-    
-moteurMinimax('NORD',6)
+#moteurMinimax('NORD',6)
 #moteurAlphaBeta('SUD',9)
-#moteurIAvsIA(9,2,True)
+moteurIAvsIA(9,2)
 # ------------------------- FIN TEST
 
 
