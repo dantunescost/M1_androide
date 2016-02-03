@@ -370,13 +370,17 @@ def moteurMinimax(campCPU, prof, taille=6):
         
 # Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
 # AlphaBeta jusqu'a atteindre la profondeur donnee.
-def evalueAlphaBeta(position,prof,alpha,beta):
+def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
     (coup,valeur) = (0,0)
     
     # Si on a atteint la profondeur maximale ou que la partie se termine a cette position,
     # on envoie la valeur de l'evaluation de la position.
     if prof == 0 or positionTerminaleMinimax(position):
-        return (0,evaluation(position))
+        # On verifie quelle fonction d'evaluation utiliser (celle de l'exercice 2 est par defaut)
+        if feval: 
+            return (0,evaluation(position))
+        else:
+            return (0,evaluationbis(position))
         
     n = position['taille'] + 1
     bestCoup = 0
@@ -405,10 +409,14 @@ def evalueAlphaBeta(position,prof,alpha,beta):
         
 
 # Fonction qui recupere le coup optimal d'AlphaBeta sur la position et la profondeur donnees 
-def choixAlphaBeta(position,prof):
+def choixAlphaBeta(position,prof,feval = 1):
     if positionTerminale(position):
         return 0
-    (coup,valeur) = evalueAlphaBeta(position,prof,None,"inf")
+    # On verifie quelle fonction d'evaluation utiliser (celle de l'exercice 2 est par defaut)
+    if feval: 
+        (coup,valeur) = evalueAlphaBeta(position,prof,None,"inf")
+    else:
+        (coup,valeur) = evalueAlphaBeta(position,prof,None,"inf",0)
     return coup
     
     
@@ -457,9 +465,11 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
         nbTours = nbTours + 1
         if position['trait'] == 'SUD':
             prof = prof1
+            feval = 0
         else:
             prof = prof2
-        coup = choixAlphaBeta(position,prof)  
+            feval = 1
+        coup = choixAlphaBeta(position,prof,feval)  
         if coup <> 0:
             if affiche:
                 affichePosition(position) 
@@ -504,7 +514,7 @@ def evaluationbis(position):
     
 #moteurMinimax('NORD',6)
 #moteurAlphaBeta('SUD',9)
-moteurIAvsIA(9,2)
+moteurIAvsIA(7,7,True)
 # ------------------------- FIN TEST
 
 
