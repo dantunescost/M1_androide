@@ -414,6 +414,10 @@ def moteurAlphaBeta(campCPU, prof, taille = 6):
             print "L'ordinateur ne peut plus jouer!"
     
 
+
+# Pour aller plus loin :
+
+# Permet de tester une partie entre 2 IA avec differentes profondeurs pour Alpha-Beta
 def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
     position = initialise(taille)
     nbTours = 0
