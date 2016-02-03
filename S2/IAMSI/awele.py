@@ -155,8 +155,8 @@ def coupAutorise(position,coup):
         tab = positionTest['tablier']
         joueur = positionTest['trait']
         i = 0
-        # Les cases du joueur 'SUD' vont de 0 a taille-1
-        # Les cases du joueur 'NORD' vont de taille a 2*taille-1
+        # Les cases du joueur 'SUD' vont de 0 a n-1
+        # Les cases du joueur 'NORD' vont de n a 2*n-1
         if joueur == 'NORD':  
             i += n
             m += n
@@ -170,22 +170,25 @@ def coupAutorise(position,coup):
 
 # Detecte la fin de la partie, pour les raisons suivantes :
 #       - Un joueur a capture suffisamment de graines et remporte la partie.
-#       - Le joueur actuel ne dispose d'aucun coup valide.
+#       - Le joueur actuel ne dispose d'aucun coup autorise.
 # Renvoie False si la partie n'est pas terminee.
 # Sinon, affiche le vainqueur ainsi que son nombre de graines puis renvoie True.        
 def positionTerminale(position):
     n = position['taille']
     joueur = position['trait']
-    if position['graines']['SUD'] >= (n*4)+1:
+    # Si un des deux joueurs a capture suffisamment de graines (25 pour un tablier de taille 6)
+    if position['graines']['SUD'] >= (n*4)+1: 
         print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
         return True
     if position['graines']['NORD'] >= (n*4)+1:
         print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
         return True
+    
+    # On test egalement si le joueur courant ne dispose d'aucun coup autorise 
     i=1    
     while not coupAutorise(position,i) and i<=6:
         i+=1
-    if i > 6:
+    if i > 6: # Si c'est le cas, le joueur adverse gagne les graines restantes et par conséquence, la partie
         if joueur == 'NORD':
             position['graines']['SUD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
@@ -196,8 +199,7 @@ def positionTerminale(position):
     return False
     
     
-# Fonction identique a la precedente, les affichages sont retires pour l'evaluation de MiniMax et ALphaBeta
-# Pour eviter de declarer la victoire d'un joueur bien avant qu'elle ne se produise.
+# Fonction identique a la precedente, les affichages sont retires pour les evaluations de MiniMax et ALphaBeta
 def positionTerminaleMinimax(position):
     n = position['taille']
     joueur = position['trait']
@@ -219,6 +221,8 @@ def positionTerminaleMinimax(position):
 
 
 # Permet a deux joueurs humains de jouer une partie via l'interface console.
+# Le tablier est affiche, puis les joueurs entrent leurs coups tour à tour.
+# Il sera demande d'entree à nouveau le coup si il n'est pas valide.
 def moteurHumains(taille = 6):
     position = initialise(taille)
     while not positionTerminale(position):
@@ -232,11 +236,13 @@ def moteurHumains(taille = 6):
         position = positionT
         
        
-# Joue un coup aleatoire sur la position donnee
+# Joue un coup aleatoire sur la position donnee.
 def choixAleatoire(position): 
+    # On teste si la partie est finie
     if positionTerminale(position):
         return 0
     n = position['taille']
+    # On tire un coup aleatoire jusqu'a trouve un coup autorise
     colonne = random.randint(1,n)
     positionTest = coupAutorise(position, colonne)
     while not positionTest:        
@@ -245,7 +251,7 @@ def choixAleatoire(position):
     return positionTest
     
     
-# Permet a un joueur humain de se mesurer a une IA jouant purement aleatoirement.
+# Permet a un joueur humain de se mesurer a une IA jouant aleatoirement.
 def moteurAleatoire(campCPU, taille=6):
     position = initialise(taille)
     if campCPU == 'SUD':
@@ -442,9 +448,9 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
     
 # /!\ Faire un nettoyage / Peut-etre un choix entre les modes de jeu dans la console au lancement ?    
     
-#moteurMinimax(6,'NORD',6)
+moteurMinimax('NORD',6)
 #moteurAlphaBeta('SUD',9)
-moteurIAvsIA(9,2,True)
+#moteurIAvsIA(9,2,True)
 # ------------------------- FIN TEST
 
 
