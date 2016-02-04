@@ -134,7 +134,6 @@ def coupJouable(position,nombre):
         # Ce test permet d'acceder a la case correspondante a la representation du tablier donnee.
         if (joueur == 'SUD' and tab[nombre-1] > 0) or (joueur == 'NORD' and tab[2*n - nombre] > 0):
             return True
-        
     return False
     
 
@@ -179,11 +178,17 @@ def positionTerminale(position):
     # Si un des deux joueurs a capture suffisamment de graines (25 pour un tablier de taille 6)
     if position['graines']['SUD'] >= (n*4)+1: 
         print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
-        print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        if position['graines']['NORD'] <> 0:
+            print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        else:
+            print 'Le joueur NORD a obtenu le score lamentable de 0 graine'
         return True
     if position['graines']['NORD'] >= (n*4)+1:
         print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
-        print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+        if position['graines']['SUD'] <> 0:        
+            print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['SUD'])+' graines!'
+        else:
+            print 'Le joueur SUD a obtenu le score lamentable de 0 graine'
         return True
     
     # Ajout d'une regle lorsqu'un joueur ne peut plus jouer
@@ -195,11 +200,17 @@ def positionTerminale(position):
         if joueur == 'NORD':
             position['graines']['SUD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur SUD. Félicitations vous gagnez avec '+str(position['graines']['SUD'])+' graines!'
-            print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            if position['graines']['NORD'] <> 0:
+                print 'Le joueur NORD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            else:
+                print 'Le joueur NORD a obtenu le score lamentable de 0 graine'
         else:
             position['graines']['NORD'] += (2*n*4) - position['graines']['SUD'] -position['graines']['NORD']
             print 'Le grand vainqueur est le joueur NORD. Félicitations vous gagnez avec '+str(position['graines']['NORD'])+' graines!'
-            print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['NORD'])+' graines!'
+            if position['graines']['SUD'] <> 0:        
+                print 'Le joueur SUD a obtenu le score honorable de '+str(position['graines']['SUD'])+' graines!'
+            else:
+                print 'Le joueur SUD a obtenu le score lamentable de 0 graine'
         return True
     return False
     
@@ -283,17 +294,20 @@ def moteurAleatoire(campCPU, taille=6):
 def evaluation(position):
     n = position['taille']
     tab = position['tablier']
+    # On teste si la partie est gagnee par un joueur 
     if position['graines']['SUD'] >= (n*4)+1:
         return 1000
     if position['graines']['NORD'] >= (n*4)+1:
         return -1000
     cases12sud = 0
-    cases12nord = 0    
+    cases12nord = 0   
+    # On compte les cases contenant 1 ou 2 graines 
     for i in range(0,n):
         if tab[i] == 1 or tab[i] == 2:
             cases12sud += 1
         if tab[i+n] == 1 or tab[i+n] == 2:
             cases12nord += 1
+    # On retourne l'equation finale en prenant en compte les graines deja gagnees par les joueurs
     return 2*position['graines']['SUD'] + cases12nord - 2*position['graines']['NORD'] - cases12sud
         
 
@@ -306,37 +320,37 @@ def evalueMinimax(position,prof):
     if prof == 0 or positionTerminaleMinimax(position):
         return (0,evaluation(position))
     
-    minus_inf = None
+    minus_inf = None 
     plus_inf = "inf"
     n = position['taille'] + 1
     bestCoup = 0
-    if position['trait'] == 'SUD':
+    if position['trait'] == 'SUD': # teste si on est sur un noeud max ou min (ici MAX)
         bestValue = minus_inf
-        for i in range(1,n):
+        for i in range(1,n): # pour tout les coups possibles faire...
             child = coupAutorise(position,i)
             if child:
                 (coup,valeur) = evalueMinimax(child,prof-1)
-                if valeur > bestValue : 
+                if valeur > bestValue : # si la valeur du noeud fils est meilleure on met a jour le coup a jouer
                     bestValue = valeur
                     bestCoup = i
         return (bestCoup,bestValue)
-    else:
+    else: # cas MIN
         bestValue = plus_inf
-        for i in range(1,n):
+        for i in range(1,n): # pour tout les coups possibles faire...
             child = coupAutorise(position,i)
             if child:
                 (coup,valeur) = evalueMinimax(child,prof-1)
-                if valeur < bestValue : 
+                if valeur < bestValue : # si la valeur du noeud fils est meilleure (inferieure) on met a jour le coup a jouer
                     bestValue = valeur
                     bestCoup = i
-        return (bestCoup,bestValue)
+        return (bestCoup,bestValue) # on renvoie le meilleur coup et sa valeur
         
         
 # Fonction qui recupere le coup optimal du MiniMax sur la position et la profondeur donnees 
 def choixMinimax(position,prof):
-    if positionTerminale(position):
+    if positionTerminale(position): # Si on est sur une position terminale on renvoie 0
         return 0
-    (coup,valeur) = evalueMinimax(position,prof)
+    (coup,valeur) = evalueMinimax(position,prof) # sinon on evalue l'arbre des coups possibles et on renvoie le meilleur coup
     return coup
     
     
@@ -370,6 +384,7 @@ def moteurMinimax(campCPU, prof, taille=6):
         
 # Fonction qui cherche le meilleur coup possible a la position donnee en appliquant
 # AlphaBeta jusqu'a atteindre la profondeur donnee.
+# Le parametre feval est optionnel et determine quelle fonction d'evaluation on utilise
 def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
     (coup,valeur) = (0,0)
     
@@ -377,38 +392,39 @@ def evalueAlphaBeta(position,prof,alpha,beta,feval = 1):
     # on envoie la valeur de l'evaluation de la position.
     if prof == 0 or positionTerminaleMinimax(position):
         # On verifie quelle fonction d'evaluation utiliser (celle de l'exercice 2 est par defaut)
-        if feval: 
+        if feval == 1: 
             return (0,evaluation(position))
         else:
             return (0,evaluationbis(position))
         
     n = position['taille'] + 1
     bestCoup = 0
-    if position['trait'] == 'SUD':
+    if position['trait'] == 'SUD': # teste si on est sur un noeud max ou min (ici MAX)
         i = 1
-        while i < n and alpha < beta: 
+        while i < n and alpha < beta: # tant qu'il y a des coups a explores et qu'on n'a pas fait de coupures, faire... 
             child = coupAutorise(position,i)
             if child:
-                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta)
-                if valeur > alpha : 
-                    alpha = valeur
+                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta,feval)
+                if valeur > alpha : # si la valeur du noeud fils est meilleure on met a jour le coup a jouer et Alpha
+                    alpha = valeur # si a la mise de Alpha, la valeur de Alpha est plus grande que celle de Beta, on coupe la branche
                     bestCoup = i
             i += 1
-        return (bestCoup,alpha)
-    else:
+        return (bestCoup,alpha) # on renvoie le meilleur coup et sa valeur
+    else: # ici MIN
         i = 1
-        while i < n and alpha < beta:
+        while i < n and alpha < beta: # tant qu'il y a des coups a explores et qu'on n'a pas fait de coupures, faire...
             child = coupAutorise(position,i)
             if child:
-                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta)
-                if valeur < beta : 
-                    beta = valeur
+                (coup,valeur) = evalueAlphaBeta(child,prof-1,alpha,beta,feval)
+                if valeur < beta : # si la valeur du noeud fils est meilleure on met a jour le coup a jouer et Beta
+                    beta = valeur # si a la mise de Beta, la valeur de Beta est plus petite que celle de Alpha, on coupe la branche
                     bestCoup = i
             i += 1
-        return (bestCoup,beta)
+        return (bestCoup,beta) # on renvoie le meilleur coup et sa valeur
         
 
-# Fonction qui recupere le coup optimal d'AlphaBeta sur la position et la profondeur donnees 
+# Fonction qui recupere le coup optimal d'AlphaBeta sur la position et la profondeur donnees
+# Le parametre feval est optionnel et determine quelle fonction d'evaluation on utilise 
 def choixAlphaBeta(position,prof,feval = 1):
     if positionTerminale(position):
         return 0
@@ -480,7 +496,8 @@ def moteurIAvsIA(prof1 = 8, prof2 = 8, affiche = False, taille = 6):
 
     print "La partie a dure : " + str(nbTours) + " tours !"
     
-# Fonction d'evaluation ameliorée
+# Fonction d'evaluation alternative (ne performe pas mieux)
+# Tient compte des chaines de trous avec 1 ou 2 graines dans son evaluation
 def evaluationbis(position):
     n = position['taille']
     tab = position['tablier']
@@ -492,6 +509,8 @@ def evaluationbis(position):
     cases12nord = 0    
     voisinMangable1 = False
     voisinMangable2 = False
+    # Les variables ci-dessus nous indique si le trou d'avant contenait 1 ou 2 graines 
+    # et nous permettent de prendre en compte ces chaines qui sont a eviter
     for i in range(0,n):
         if tab[i] == 1 or tab[i] == 2:
             if voisinMangable1:
@@ -509,25 +528,26 @@ def evaluationbis(position):
             voisinMangable2 = True
         else:
             voisinMangable2 = False
-    return 3*position['graines']['SUD'] + 2*cases12nord - 3*position['graines']['NORD'] - 2*cases12sud
+    return 5*position['graines']['SUD'] + cases12nord - 5*position['graines']['NORD'] - cases12sud
+
+
+
 # ------------------------- TESTS
     
 #moteurMinimax('NORD',6)
 #moteurAlphaBeta('SUD',9)
-moteurIAvsIA(7,7,True)
+#moteurIAvsIA(6,6,True)
+
 # ------------------------- FIN TEST
 
 
-
-
-
-
-
-
-
-
-
-
-
+# ------------------------- CONCLUSION
+#
+#   Après plusieurs tests on remarque que l'algorithme Alpha-Beta ameliore beaucoup la complexité de l'IA.
+#   Alors qu'avec le moteur MiniMax l'IA pouvait jouer en un temps raisonnable jusqu'a progondeur 6, avec  
+#   l'Alpha-Beta on peut aller jusqu'a profondeur 9, ce qui change aussi la strategie de jeu de l'IA.
+#   On a egalement implemente une fonction d'evaluation avec plus de criteres mais elle ne bat l'autre fonction 
+#   que dans 60-70% des cas.
+#
 
 
