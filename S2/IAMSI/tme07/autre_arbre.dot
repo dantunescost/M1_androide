@@ -1,0 +1,31 @@
+digraph Tree {
+0 [label="petal width (cm) <= 0.7500\nentropy = 1.58496250072\nsamples = 90", shape="box"] ;
+1 [label="entropy = 0.0000\nsamples = 30\nvalue = [ 30.   0.   0.]", shape="box"] ;
+0 -> 1 ;
+2 [label="petal width (cm) <= 1.5500\nentropy = 1.0\nsamples = 60", shape="box"] ;
+0 -> 2 ;
+3 [label="petal length (cm) <= 4.9500\nentropy = 0.222284830686\nsamples = 28", shape="box"] ;
+2 -> 3 ;
+4 [label="entropy = 0.0000\nsamples = 27\nvalue = [  0.  27.   0.]", shape="box"] ;
+3 -> 4 ;
+5 [label="entropy = 0.0000\nsamples = 1\nvalue = [ 0.  0.  1.]", shape="box"] ;
+3 -> 5 ;
+6 [label="petal length (cm) <= 5.0500\nentropy = 0.448864488723\nsamples = 32", shape="box"] ;
+2 -> 6 ;
+7 [label="sepal width (cm) <= 2.9000\nentropy = 0.918295834054\nsamples = 9", shape="box"] ;
+6 -> 7 ;
+8 [label="entropy = 0.0000\nsamples = 5\nvalue = [ 0.  0.  5.]", shape="box"] ;
+7 -> 8 ;
+9 [label="petal length (cm) <= 4.8500\nentropy = 0.811278124459\nsamples = 4", shape="box"] ;
+7 -> 9 ;
+10 [label="entropy = 0.0000\nsamples = 2\nvalue = [ 0.  2.  0.]", shape="box"] ;
+9 -> 10 ;
+11 [label="sepal length (cm) <= 6.4000\nentropy = 1.0\nsamples = 2", shape="box"] ;
+9 -> 11 ;
+12 [label="entropy = 0.0000\nsamples = 1\nvalue = [ 0.  0.  1.]", shape="box"] ;
+11 -> 12 ;
+13 [label="entropy = 0.0000\nsamples = 1\nvalue = [ 0.  1.  0.]", shape="box"] ;
+11 -> 13 ;
+14 [label="entropy = 0.0000\nsamples = 23\nvalue = [  0.   0.  23.]", shape="box"] ;
+6 -> 14 ;
+}

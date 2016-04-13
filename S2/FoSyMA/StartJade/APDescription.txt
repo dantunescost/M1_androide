@@ -1,1 +1,1 @@
-( ap-description  :name "ppti-14-509-07:8888/JADE" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://ppti-14-509-07.ufr-info-p6.jussieu.fr:7778/acc))))
+( ap-description  :name "ppti-14-502-02:8888/JADE" :ap-services (set ( ap-service  :name fipa.mts.mtp.http.std :type fipa.mts.mtp.http.std :addresses (sequence http://ppti-14-502-02.ufr-info-p6.jussieu.fr:7778/acc))))
