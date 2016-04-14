@@ -1,0 +1,30 @@
+(define (domain singeBananes)
+	(:requirements :strips :typing)
+	(:types object position level)
+	(:predicates
+		(situe ?x - object ?y - position)
+		(niveau ?x - object ?y - level)
+		(possede ?x - object ?y - object)
+		(mainsVides)
+	)
+	(:action seDeplace ;;; action qui permet au singe de se deplacer
+		:parameters (?x - position ?y - position)
+		:precondition (and (situe Singe ?x) (niveau Singe Bas))
+		:effect (and (not (situe Singe ?x)) (situe Singe ?y))
+	)
+	(:action prend ;;; action qui permet au singe de prendre un objet
+		:parameters (?x - object ?y - position ?z - level)
+		:precondition (and (mainsVides) (situe Singe ?y) (situe ?x ?y) (niveau Singe ?z) (niveau ?x ?z))
+		:effect (and (not (mainsVides)) (possede Singe ?x) (not (situe ?x ?y)) (not (niveau ?x ?z)))
+	)
+	(:action depose ;;; action qui permet au singe de deposer un objet
+		:parameters (?x - object ?y - position ?z - level)
+		:precondition (and (possede Singe ?x) (situe Singe ?y) (niveau Singe ?z))
+		:effect (and (mainsVides) (not (possede Singe ?x)) (situe ?x ?y) (niveau ?x ?z))
+	)
+	(:action monteCaisse ;;; action qui permet au singe de monter sur la caisse
+		:parameters (?y - position)
+		:precondition (and (situe Singe ?y) (niveau Singe Bas) (situe Caisse ?y) (niveau Caisse Bas))
+		:effect (and (niveau Singe Haut) (not (niveau Singe Bas)))
+	)
+)
